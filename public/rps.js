@@ -70,6 +70,11 @@ function draw(){
   } else {
     currScreen = 1;
   }
+  if(playerThrows.length == 25){
+    wins = 0;
+    losses = 0;
+    ties = 0;
+  }
   switch(currScreen){
     case 0:
       textFont(font);
@@ -144,11 +149,6 @@ function getComputerMove(result){
         break;
     }
   } else {
-    if(playerThrows.length == 25){
-      wins = 0;
-      losses = 0;
-      ties = 0;
-    }
     let nextThrow = 0;
     let lastOne = playerThrows.substring(playerThrows.length - 1);
     let lastTwo = playerThrows.substring(playerThrows.length - 2);
