@@ -1,15 +1,22 @@
+//game controls
 let w, h;
 let font;
 let fontSize;
 let currScreen = 0;
 let yesButton, noButton;
 let color = 'lightGrey';
+
+//tracks stats vs computer
 let wins = 0;
 let ties = 0;
 let losses = 0;
+
+//buttons for interface
 let rockButton;
 let paperButton;
 let scissorsButton;
+
+//keeps track of player and computer throws
 let computerResult = '';
 let playerThrows = ''; //rock = 1, paper = 2, scissors = 3
 let computerThrows = '';
@@ -17,7 +24,7 @@ let computerThrows = '';
 function preload() {
   font = loadFont('Honey Bear.ttf');
 }
-
+//resizes everything if window size is changed
 function windowResized() {
   const css = getComputedStyle(canvas.parentElement);
   let marginWidth = round(float(css.marginLeft) + float(css.marginRight));
@@ -26,7 +33,7 @@ function windowResized() {
   h = windowHeight - marginHeight;
   resizeCanvas(w, h, true);
 }
-
+//sets up windows, font, and buttons
 function setup(){
   const css = getComputedStyle(canvas.parentElement);
   let marginWidth = round(float(css.marginLeft) + float(css.marginRight));
@@ -65,6 +72,7 @@ function draw(){
   windowResized();
   fill('black');
   background(color);
+  //if computer isnt trained screen 0 else screen 1
   if(playerThrows.length < 25){
     currScreen = 0;
   } else {
@@ -77,6 +85,7 @@ function draw(){
   }
   switch(currScreen){
     case 0:
+      //training computer
       textFont(font);
       textSize(w / 20);
       text('Train The Computer', w/2, h/7);
@@ -86,6 +95,7 @@ function draw(){
       text('Computer: ' + computerResult, w/3, h/4 * 3)
       break;
     case 1:
+      //trained computer
       textFont(font);
       textSize(w / 20);
       text('Play The Computer', w/2, h/7);
@@ -96,24 +106,28 @@ function draw(){
       break;
   }
 }
-
+//player rock
 function rockResult(){
   getComputerMove(1)
 }
+//player paper
 function paperResult(){
   getComputerMove(2)
 }
+//player scissors
 function scissorsResult(){
   getComputerMove(3)
 }
-
+//get random throw to train computer
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
-
+//handles computer moves
 function getComputerMove(result){
+  //if computer is still training
   if(playerThrows.length < 25){
     let randInt = getRandomInt(3)
+    //handles computer throws and outcome of game
     switch(randInt){
       case 0:
         computerResult = 'Rock'
@@ -125,7 +139,6 @@ function getComputerMove(result){
         if(result == 3)
           losses++;
         break;
-
       case 1:
         computerResult = 'Paper'
         computerThrows = computerThrows + "2";
@@ -136,7 +149,6 @@ function getComputerMove(result){
         if(result == 3)
           wins++;
         break;
-
       case 2:
         computerResult = 'Scissors'
         computerThrows = computerThrows + "3";
@@ -148,16 +160,20 @@ function getComputerMove(result){
           ties++;
         break;
     }
-  } else {
+  } else { //computer is trained
     let nextThrow = 0;
+
+    //last x throws from player
     let lastOne = playerThrows.substring(playerThrows.length - 1);
     let lastTwo = playerThrows.substring(playerThrows.length - 2);
     let lastThree = playerThrows.substring(playerThrows.length - 3);
-    console.log(playerThrows);
+    console.log('Player Throws: ' + playerThrows);
+    //if a pattern of 3 is found
     if(playerThrows.substring(0, playerThrows.length - 3).includes(lastThree)){
       console.log('3long')
       let indexes = [];
       let counter = 1;
+      //find all occurances of the pattern
       while(counter >=1){
         index = nthIndex(playerThrows, lastThree, counter)
         if(index >= 0 && index < playerThrows.length - 3){
@@ -169,16 +185,19 @@ function getComputerMove(result){
       }
       let humanNextThrows = [];
       console.log(indexes);
+      //find the next throw after the pattern
       for(let i = 0; i < indexes.length; i++){
         humanNextThrows.push(playerThrows.substring(indexes[i] + 3, indexes[i] + 4));
       }
       console.log(humanNextThrows);
-      //nextThrow = mostCommonThrow(humanNextThrows);
+      //find most common next human throw
       nextThrow = findMode(humanNextThrows);
     } else if(playerThrows.substring(0, playerThrows.length - 2).includes(lastTwo)){
+      //pattern length 2 is found
       console.log('2long')
       let indexes = [];
       let counter = 1;
+      //find all occurances of the pattern in human throws
       while(counter >=1){
         index = nthIndex(playerThrows, lastTwo, counter)
         if(index >= 0 && index < playerThrows.length - 2){
@@ -190,16 +209,19 @@ function getComputerMove(result){
       }
       let humanNextThrows = [];
       console.log(indexes);
+      //find the next throw after the pattern
       for(let i = 0; i < indexes.length; i++){
         humanNextThrows.push(playerThrows.substring(indexes[i] + 2, indexes[i] + 3));
       }
       console.log(humanNextThrows);
-  //    nextThrow = mostCommonThrow(humanNextThrows);
+      //find most common next human throw
       nextThrow = findMode(humanNextThrows);
-    } else {
+    } else if(playerThrows.substring(0, playerThrows.length - 1).includes(lastOne)){
+      //pattern length 1 is found
       console.log('1long')
       let indexes = [];
       let counter = 1;
+      //find all occurances of the pattern in human throws
       while(counter >=1){
         index = nthIndex(playerThrows, lastOne, counter)
         if(index >= 0 && index < playerThrows.length - 1){
@@ -211,14 +233,19 @@ function getComputerMove(result){
       }
       let humanNextThrows = [];
       console.log(indexes);
+      //find the next throw after the pattern
       for(let i = 0; i < indexes.length; i++){
         humanNextThrows.push(playerThrows.substring(indexes[i] + 1, indexes[i] + 2));
       }
       console.log(humanNextThrows);
-    //  nextThrow = mostCommonThrow(humanNextThrows);
+      //find most common next human throw
       nextThrow = findMode(humanNextThrows);
+    } else {
+      //player trying to trick computer, haven't decided what to do yet
+      console.log('Stop trying to trick me');
     }
     console.log(nextThrow);
+    //handles computer throw and outcome
     switch(Number(nextThrow)){
       case 1:
         console.log("CASE 1")
@@ -242,7 +269,6 @@ function getComputerMove(result){
         if(result == 3)
           ties++;
         break;
-
       case 3:
         console.log("CASE 3")
         computerResult = 'Rock'
@@ -259,6 +285,7 @@ function getComputerMove(result){
         break;
     }
   }
+  //puts human throw in the string
   switch(result){
     case 1:
       playerThrows = playerThrows + "1";
@@ -271,6 +298,7 @@ function getComputerMove(result){
   }
 }
 
+//find each index of pattern
 function nthIndex(str, pat, n){
     var L= str.length, i= -1;
     while(n-- && i++<L){
@@ -280,24 +308,7 @@ function nthIndex(str, pat, n){
     return i;
 }
 
-function mostCommonThrow(arr){
-  let mf = 1;
-  let m = 0;
-  let item;
-  for(let i = 0; i < arr.length; i++){
-    for(let j = i; j < arr.length; j++){
-      if(arr[i] == arr[j])
-        m++;
-      if (mf < m){
-        mf = m;
-        item = arr[i];
-      }
-    }
-    m=0;
-  }
-  return item;
-}
-
+//find most occuring throw after pattern
 function findMode(numbers) {
     let counted = numbers.reduce((acc, curr) => {
         if (curr in acc) {
