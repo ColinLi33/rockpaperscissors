@@ -4,7 +4,6 @@ let font;
 let fontSize;
 let currScreen = 0;
 let yesButton, noButton;
-let color = 'lightGrey';
 
 //tracks stats vs computer
 let wins = 0;
@@ -26,24 +25,24 @@ function preload() {
 }
 //resizes everything if window size is changed
 function windowResized() {
-  const css = getComputedStyle(canvas.parentElement);
-  let marginWidth = round(float(css.marginLeft) + float(css.marginRight));
-  let marginHeight = round(float(css.marginTop) + float(css.marginBottom));
-  w = windowWidth - marginWidth;
-  h = windowHeight - marginHeight;
+  w = windowWidth;
+  h = windowHeight;
+  rockButton.size(w/7,w/20);
+  rockButton.position(w/4,h/1.8);
+
+  paperButton.size(w/7,w/20);
+  paperButton.position(w/2.35,h/1.8);
+
+  scissorsButton.size(w/7,w/20);
+  scissorsButton.position(w/5 * 3,h/1.8);
   resizeCanvas(w, h, true);
 }
 //sets up windows, font, and buttons
 function setup(){
-  const css = getComputedStyle(canvas.parentElement);
-  let marginWidth = round(float(css.marginLeft) + float(css.marginRight));
-  let marginHeight = round(float(css.marginTop) + float(css.marginBottom));
-  w = windowWidth - marginWidth;
-  h = windowHeight - marginHeight;
-  resizeCanvas(w, h, true);
+  w = windowWidth;
+  h = windowHeight;
   createCanvas(windowWidth, windowHeight);
   textFont(font);
-  textSize(fontSize);
   textAlign(CENTER);
 
   rockButton = createButton("Rock");
@@ -55,67 +54,57 @@ function setup(){
   scissorsButton.mouseClicked(scissorsResult);
 
   rockButton.size(w/7,w/20);
-  rockButton.position(w/5,h/2);
-  rockButton.style("font-size", "48px");
+  rockButton.position(w/4,h/1.8);
+  rockButton.style("font-size", "1.8vw"); // vw so the text scales correctly
 
   paperButton.size(w/7,w/20);
-  paperButton.position(w/2.5,h/2);
-  paperButton.style("font-size", "48px");
+  paperButton.position(w/2.35,h/1.8);
+  paperButton.style("font-size", "1.8vw");
 
   scissorsButton.size(w/7,w/20);
-  scissorsButton.position(w/5 * 3,h/2);
-  scissorsButton.style("font-size", "48px");
-
+  scissorsButton.position(w/5 * 3,h/1.8);
+  scissorsButton.style("font-size", "1.8vw");
 }
 
 function draw(){
-  windowResized();
   fill('black');
-  background(color);
+  background('lightGrey');
+
   //if computer isnt trained screen 0 else screen 1
-  if(playerThrows.length < 25){
-    currScreen = 0;
-  } else {
-    currScreen = 1;
-  }
+  playerThrows.length < 25 ? currScreen = 0 : currScreen = 1
+
   if(playerThrows.length == 25){
     wins = 0;
     losses = 0;
     ties = 0;
   }
-  switch(currScreen){
-    case 0:
-      //training computer
-      textFont(font);
-      textSize(w / 20);
-      text('Train The Computer', w/2, h/7);
-      textFont('Georgia');
-      textSize(w / 30)
-      text('Games Left: ' + (25 - playerThrows.length) + '\nWin: ' + wins + '\nTie: ' + ties + '\nLoss: ' + losses, w/2, h/4)
-      text('Computer: ' + computerResult, w/3, h/4 * 3)
-      break;
-    case 1:
-      //trained computer
-      textFont(font);
-      textSize(w / 20);
-      text('Play The Computer', w/2, h/7);
-      textFont('Georgia');
-      textSize(w / 30)
-      text('Win: ' + wins + '\nTie: ' + ties + '\nLoss: ' + losses, w/2, h/4)
-      text('Computer: ' + computerResult, w/3, h/4 * 3)
-      break;
+
+  textToPrint = '';
+  if(currScreen == 0) {
+    textToPrint = 'Games Left: ' + (25 - playerThrows.length + "\n");
   }
+  textToPrint += 'Win: ' + wins + '\nTie: ' + ties + '\nLoss: ' + losses;
+
+  textFont(font);
+  textSize(w / 20);
+  text('Train The Computer', w/2, h/7);
+
+  textFont('Georgia');
+  textSize(w / 30)
+  text(textToPrint, w/2, h/4)
+  text('Computer: ' + computerResult, w/3, h/4 * 3)
 }
+
 //player rock
-function rockResult(){
+function rockResult() {
   getComputerMove(1)
 }
 //player paper
-function paperResult(){
+function paperResult() {
   getComputerMove(2)
 }
 //player scissors
-function scissorsResult(){
+function scissorsResult() {
   getComputerMove(3)
 }
 //get random throw to train computer
